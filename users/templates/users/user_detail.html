@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{ user_obj.username }} — Easy Buy</title>
+  </head>
+  <body>
+    <h1>{{ user_obj.username }}</h1>
+    <p>Email: <a href="mailto:{{ user_obj.email }}">{{ user_obj.email }}</a></p>
+    <p>Phone: {{ user_obj.phone }}</p>
+    <p><a href="/users/">Back to users list</a></p>
+  </body>
+</html>

@@ -5,17 +5,24 @@ from .serializers import UserProfileSerializer, UserRegisterSerializer
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 
+def get_user_queryset(request):
+    include_inactive = request.GET.get('include_inactive', '').lower() in('1', 'true', 'yes')
+    queryset = User.objects.all() if include_inactive else User.objects.filter(is_active=True)
+    return queryset.order_by('id')
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
     permission_classes = [permissions.AllowAny]
 
-
 class UserListView(generics.ListAPIView):
-    """List active users."""
-    queryset = User.objects.filter(is_active=True).order_by('id')
+    """List users; by default only active users. Pass ?include_inactive=1 to include inactive users."""
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        include_inactive = str(self.request.GET.get('include_inactive', '')).lower() in ('1', 'true', 'yes')
+        qs = User.objects.all() if include_inactive else User.objects.filter(is_active=True)
+        return qs.order_by('id')
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
@@ -33,7 +40,9 @@ class UserListPageView(ListView):
     context_object_name = 'users'
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True).order_by('id')
+        include_inactive = str(self.request.GET.get('include_inactive', '')).lower() in ('1', 'true', 'yes')
+        qs = User.objects.all() if include_inactive else User.objects.filter(is_active=True)
+        return qs.order_by('id')
 
 
 class UserDetailPageView(DetailView):

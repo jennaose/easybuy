@@ -5,16 +5,26 @@
     <title>Users 014 Easy Buy</title>
   </head>
   <body>
-    <h1>Active users</h1>
-    <p>This is a browser-friendly list of active users. Click a username to view the profile page.</p>
+    <h1>Users</h1>
+    <p>This is a browser-friendly list of users. Click a username to view the profile page.</p>
+
+    <p>
+      <a href="/users/?include_inactive=1">Show all users (include inactive)</a>
+      &nbsp;|&nbsp;
+      <a href="/api/users/?include_inactive=1&format=json">API JSON (include inactive)</a>
+    </p>
+
     <ul>
     {% for user in users %}
       <li>
         <a href="/users/{{ user.id }}/">{{ user.username }}</a>
         — {{ user.email }}
+        {% if not user.is_active %}
+          <strong>(inactive)</strong>
+        {% endif %}
       </li>
     {% empty %}
-      <li>No active users found.</li>
+      <li>No users found.</li>
     {% endfor %}
     </ul>
     <p><a href="/">Back to home</a></p>

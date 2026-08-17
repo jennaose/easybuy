@@ -1,0 +1,6 @@
+Django
+djangorestframework
+djangorestframework-simplejwt
+cloudinary
+django-cloudinary-storage
+Pillow

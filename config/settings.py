@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -121,6 +122,38 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Media files (user-uploaded content)
+# By default use local MEDIA_ROOT for development. To use Cloudinary,
+# set the CLOUDINARY_STORAGE_CLOUD_NAME, CLOUDINARY_STORAGE_API_KEY and
+# CLOUDINARY_STORAGE_API_SECRET environment variables (or set a CLOUDINARY_URL).
+MEDIA_URL = '/media/'
+
+if os.environ.get('CLOUDINARY_URL') or os.environ.get('CLOUDINARY_STORAGE_CLOUD_NAME'):
+    # Use django-cloudinary-storage when Cloudinary credentials are set
+    # Install with: pip install cloudinary django-cloudinary-storage
+    try:
+        INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
+    except NameError:
+        # INSTALLED_APPS should already be defined above; if not, define it minimally
+        INSTALLED_APPS = [
+            'cloudinary',
+            'cloudinary_storage',
+        ]
+
+    # Store uploaded media files (ImageField/FileField) on Cloudinary
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+    # Optionally also serve static files via Cloudinary (not commonly used in production)
+    STATICFILES_STORAGE = os.environ.get('CLOUDINARY_STATIC', '') and 'cloudinary_storage.storage.StaticHashedCloudinaryStorage' or 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_STORAGE_CLOUD_NAME'),
+        'API_KEY': os.environ.get('CLOUDINARY_STORAGE_API_KEY'),
+        'API_SECRET': os.environ.get('CLOUDINARY_STORAGE_API_SECRET'),
+    }
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

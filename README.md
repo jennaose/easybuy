@@ -63,3 +63,28 @@ The backend uses DRF views/viewsets to process requests and return API responses
 
 - The profile API requires JWT authentication via the `Authorization: Bearer <access_token>` header.
 - The browser-facing pages are designed to allow clicking through users without using curl or environment variables.
+
+## Cloudinary (image hosting)
+
+This project can be configured to upload and serve media (images) from Cloudinary instead of local filesystem storage. To enable Cloudinary storage:
+
+1. Install the required packages in your virtual environment:
+
+```bash
+pip install cloudinary django-cloudinary-storage
+```
+
+2. Provide your Cloudinary credentials via environment variables (do NOT commit secrets to the repository):
+
+- `CLOUDINARY_STORAGE_CLOUD_NAME` — your Cloudinary cloud name
+- `CLOUDINARY_STORAGE_API_KEY` — your Cloudinary API key
+- `CLOUDINARY_STORAGE_API_SECRET` — your Cloudinary API secret
+
+Alternatively you may set a single `CLOUDINARY_URL` environment variable (format: `cloudinary://API_KEY:API_SECRET@CLOUD_NAME`).
+
+3. With the environment variables set, Django will use Cloudinary for file storage automatically. Uploaded ImageField files (e.g., avatars, listing images) will be stored in Cloudinary.
+
+4. For development without Cloudinary, files will continue to be saved under the local `media/` directory.
+
+Security note: Treat your Cloudinary API key/secret like a password. Use environment variables or a secrets manager in production.
+
